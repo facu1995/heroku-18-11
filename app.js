@@ -1,7 +1,7 @@
-import express from 'express';
-import methodOverride from "method-override";
-import cors from "cors";
-import axios from "axios";
+const methodOverride = require("method-override");
+const cors = require("cors");
+const express = require("express");
+const axios= require("axios");
 
 const server = express();
 const port = 3001;
@@ -12,13 +12,13 @@ server.use(methodOverride());
 server.use(express.urlencoded({ extended: true }));
 server.use(express.json());
 
-let users = [
-
-    { "email": "foo@foo.com", "name": "foo", "pass": "foo123" },
-    { "email": "bar@bar.com", "name": "bar", "pass": "bar123" },
-    { "email": "qux@qux.com", "name": "qux", "pass": "qux123" },
-];
-
+let users = []
+/* 
+        {"email": "foo@foo.com", "name":"foo", "pass": "foo123"},
+        {"email": "bar@bar.com", "name":"bar", "pass": "bar123"},
+        {"email": "qux@qux.com", "name":"qux", "pass": "qux123"},
+    ];
+ */
 
 server.listen(port, () => {
     log("start server http://localhost:" + port);
@@ -36,7 +36,7 @@ server.get("/data", (req, res) => {
                 let data = Object(response.data);
                 log(typeof data);
                 log(data);
-                let preuba = { "email": "qux@qux.com", "name": "qux", "pass": "qux123" };
+                let preuba={"email": "qux@qux.com", "name":"qux", "pass": "qux123"};
                 log(preuba);
                 log(typeof preuba);
             })
@@ -45,18 +45,16 @@ server.get("/data", (req, res) => {
             });
         res.send("Se inicializo los usuarios");
     }
-    else {
+    else{
         res.send("Ya exisitan usuarios");
     }
 })
-server.get("/reset", (req, res) => {
-    users = [];
-})
 
-server.get("/user/unmail/:email", (req, res) => {
+
+/* server.get("/user/unmail/:email", (req, res) => {
     console.log(req.params.email);
     res.send(users.filter(el => el.email == req.params.email));
-});
+}); */
 /* http://localhost:3000/user/["foo@foo.com","bar@bar.com"] */
 server.get("/usersEmail/:email", (req, res) => {
     let email = req.params.email;
@@ -87,22 +85,25 @@ server.post("/user", (req, res) => {
 
 
 
-server.delete("/user/borrarUno/:email", (req, res) => {
+server.delete("/user/:email", (req, res) => {
     users = users.filter(el => el.email != req.params.email);
     res.send("usuario borrado");
 });
-/* /user/foo@foo.com,bar@bar.com */
 
-
-/* "foo@foo.com","bar@bar.com" */
-server.delete("/user/borrarVarios/", (req, res) => {
-    let arrayEmail = req.query.email;
-    arrayEmail.forEach(email => {
-        users = users.filter((elemento) => elemento.email != email)
-})
-res.send("Se eliminaron todos los usuarios con ese mail");
+/* server.delete("/user/:emailArray", (req, res) => {
+    emailArray = req.params.emailArray;
+    let i, j;
+    let resp=[];
+    for (j of users) {
+        for (i of emailArray) {
+            if (i == el) {
+                resp.push(el);
+            }
+        }
+    }
+    res.send(resp)
 });
-
+ */
 
 server.put("/user/cambiar/", (req, res) => {
     users = forEach((user, i) => {
