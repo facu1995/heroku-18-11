@@ -1,115 +1,42 @@
+/* import methodOverride from "method-override";
+import cors from "cors";
+import express from "express"; */
 const methodOverride = require("method-override");
 const cors = require("cors");
 const express = require("express");
-const axios= require("axios");
+//
+const app = express();
 
-const server = express();
-const port = 3001;
-const log = console.log;
+let port = process.env.PORT || 3000;
 
-server.use(cors()); // permite conectar con servidores distintas
-server.use(methodOverride());
-server.use(express.urlencoded({ extended: true }));
-server.use(express.json());
+let users = ["bart", "lisa", "homero", "marge"];
 
-let users = []
-/* 
-        {"email": "foo@foo.com", "name":"foo", "pass": "foo123"},
-        {"email": "bar@bar.com", "name":"bar", "pass": "bar123"},
-        {"email": "qux@qux.com", "name":"qux", "pass": "qux123"},
-    ];
- */
+app.use(cors()); // permite conectar con servidores distintas
+app.use(methodOverride());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
-server.listen(port, () => {
-    log("start server http://localhost:" + port);
+
+
+app.get("/users", (req, res) => {
+   res.send(users);
 });
 
-server.get("/users", (req, res) => {
-    res.send(users);
+app.post("/user/create/", (req, res) => {
+   users.push(req.body.nombre);
+   res.send("usuario creado");
 });
 
-server.get("/data", (req, res) => {
-    if (users.length == 0) {
-        axios
-            .get('https://devplace.free.beeceptor.com/users')
-            .then(function (response) {
-                let data = Object(response.data);
-                log(typeof data);
-                log(data);
-                let preuba={"email": "qux@qux.com", "name":"qux", "pass": "qux123"};
-                log(preuba);
-                log(typeof preuba);
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
-        res.send("Se inicializo los usuarios");
-    }
-    else{
-        res.send("Ya exisitan usuarios");
-    }
+app.delete("/user/delete/:nombre", (req, res) => {
+   users.filter(el => el != req.params.nombre)
+   res.send("usuario borrado");
+});
+app.put("/user/modify/:nombre/:nombre2", (req, res) => {
+   users = users.map(el => (req.params.nombre === el) ? req.params.nombre2 : el)
+   res.send("usuario ha sido modificado");
 })
 
-
-/* server.get("/user/unmail/:email", (req, res) => {
-    console.log(req.params.email);
-    res.send(users.filter(el => el.email == req.params.email));
-}); */
-/* http://localhost:3000/user/["foo@foo.com","bar@bar.com"] */
-server.get("/usersEmail/:email", (req, res) => {
-    let email = req.params.email;
-    let arrayEmail = email.split(",");
-    let resp = [];
-    arrayEmail.forEach((email) => {
-        users.forEach((user) => {
-            if (user.email == email) {
-                resp.push(user)
-            }
-        })
-    })
-    res.send(resp);
-})
-
-
-server.get("/user/name/", (req, res) => {
-    res.send(users.filter(el => (el.name === req.query.name)
-    ))
+app.listen(port, () => {
+   log("start server");
 });
 
-server.post("/user", (req, res) => {
-    users.push(
-        { email: req.body.email, name: req.body.nombre, pass: req.body.pass }
-    );
-    res.send("usuario creado");
-});
-
-
-
-server.delete("/user/:email", (req, res) => {
-    users = users.filter(el => el.email != req.params.email);
-    res.send("usuario borrado");
-});
-
-/* server.delete("/user/:emailArray", (req, res) => {
-    emailArray = req.params.emailArray;
-    let i, j;
-    let resp=[];
-    for (j of users) {
-        for (i of emailArray) {
-            if (i == el) {
-                resp.push(el);
-            }
-        }
-    }
-    res.send(resp)
-});
- */
-
-server.put("/user/cambiar/", (req, res) => {
-    users = forEach((user, i) => {
-        if (user.email == req.body.email) {
-            users[i].email = req.body.nuevoEmail;
-        }
-    })
-    res.send("usuario ha sido modificado");
-})
