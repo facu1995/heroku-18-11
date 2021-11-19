@@ -1,25 +1,26 @@
-const methodOverride = require("method-override");
-const cors = require("cors");
+const cors= require("cors");
+const path= require("path");
+const methodOverride =require("method-override");
 const express = require("express");
 
 const server = express();
-const port = 3000;
+let port = process.env.PORT || 3000;
 
+let users = [
+   { "email": "foo@foo.com", "name": "foo", "pass": "foo123" },
+   { "email": "bar@bar.com", "name": "bar", "pass": "bar123" },
+   { "email": "qux@qux.com", "name": "qux", "pass": "qux123" },
+];
 server.use(cors()); // permite conectar con servidores distintas
 server.use(methodOverride());
 server.use(express.urlencoded({ extended: true }));
 server.use(express.json());
 
-let users = [
-
-   { "email": "foo@foo.com", "name": "foo", "pass": "foo123" },
-   { "email": "bar@bar.com", "name": "bar", "pass": "bar123" },
-   { "email": "qux@qux.com", "name": "qux", "pass": "qux123" },
-];
-
-
+app.get("/",(req,res)=>{
+   res.sendFile("index");
+})
 server.listen(port, () => {
-   console.log("inicio");
+   console.log("start server");
 });
 
 server.get("/users", (req, res) => {
